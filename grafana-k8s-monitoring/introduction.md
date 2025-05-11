@@ -53,7 +53,7 @@ If you’re looking to get started quickly, [Grafana Cloud’s free forever plan
 - ✅ 10k metrics
 - ✅ 50GB logs
 - ✅ 50GB traces
-- ✅ 50GB profiles and more ..
+- ✅ 50GB profiles and more.
 
 Grafana Cloud makes it easy to get started with Alloy-based observability. Once signed up, you can deploy the Kubernetes Monitoring Helm Chart and begin ingesting data immediately.
 
