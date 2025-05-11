@@ -163,7 +163,7 @@ Understanding how telemetry data is routed within Grafana Kubernetes Monitoring 
 
 We also looked at different authentication mechanisms—basic auth, bearer tokens, and Kubernetes Secrets—to ensure secure data transmission. Finally, we explored advanced configuration options like extra headers, cluster labels, and dynamic labels, which allow you to tailor your telemetry pipeline for multi-cluster and production-grade environments.
 
-You can find the complete values.yaml configuration [here]().
+You can find the complete values.yaml configuration [here](https://github.com/varunpappu/articles/blob/main/grafana-k8s-monitoring/destinations/values.yaml).
 
 In the upcoming articles, we’ll begin exploring the individual Alloy modules—starting with alloy-logs, the component responsible for collecting logs from Kubernetes pods and nodes.
 
