@@ -1,0 +1,46 @@
+cluster:
+  name: minikube-localhost
+
+destinations:
+  - name: metricsService
+    type: prometheus
+    url: http://prometheus-grafana-cloud-endpoint/api/prom/push
+    auth:
+      type: basic
+      usernameKey: prometheusUsername
+      passwordKey: agentToken
+    secret:
+      create: false
+      name: k8s-monitoring
+      namespace: observability
+
+  - name: logsService
+    type: loki
+    url: http://loki-grafana-cloud-endpoint/loki/api/v1/push
+    auth:
+      type: basic
+      usernameKey: lokiUsername
+      passwordKey: agentToken
+    secret:
+      create: false
+      name: k8s-monitoring
+      namespace: observability
+
+  - name: otlpService
+    type: otlp
+    protocol: http
+    metrics:
+      enabled: true
+    logs:
+      enabled: true
+    traces:
+      enabled: true
+    url: https://otel-grafana-cloud-endpoint/otlp
+    auth:
+      type: basic
+      usernameKey: otlpUsername
+      passwordKey: agentToken
+    secret:
+      create: false
+      name: k8s-monitoring
+      namespace: observability

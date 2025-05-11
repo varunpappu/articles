@@ -1,8 +1,8 @@
-# **Routing Telemetry in Grafana Kubernetes Monitoring: A Deep Dive into Destinations**
+# **Routing Telemetry in Grafana K8s Monitoring: A Deep Dive into Destinations**
 
 In the [first article](https://nsvarun14.medium.com/inside-grafana-kubernetes-monitoring-meet-the-alloy-modules-powering-your-observability-adbad8a06bf7) of this series, I introduced the Alloy modules that power the Grafana Kubernetes Monitoring ecosystem. These modules collect and provide telemetry data from your Kubernetes cluster, but the journey doesn't end there. Once your metrics, logs, traces, and profiles are captured, they need to be routed to the right destinations for further analysis and storage.
 
-In this article, we'll explore the concept of **Destinations** in Grafana Kubernetes Monitoring—where telemetry data goes after being collected. We’ll dive into how you can configure different destinations, including Prometheus, Loki, and OTLP-compatible backends, to efficiently route your data. I’ll also show you how to use the OTLP destination to streamline your telemetry pipeline, especially when integrating with services like Grafana Cloud.
+In this article, we'll explore the concept of **Destinations** in Grafana Kubernetes Monitoring—where telemetry data goes after being collected. We’ll dive into how you can configure different destinations, including Prometheus, Loki, and OTLP-compatible backends, to efficiently route your data.
 
 ---
 
@@ -36,7 +36,7 @@ destinations:
     traces:
       enabled: true
     url: https://otel-grafana-cloud-endpoint/otlp
-````
+```
 
 ### **Understanding OTLP Service Configuration**
 
@@ -48,12 +48,12 @@ When configuring the OTLP destination, be mindful that if you connect to a Tempo
 
 To ensure that only authorized services can push telemetry data to your destinations, authentication is often required. The Helm chart offers several authentication methods, each suited for different needs:
 
-| Authentication Type | Description                                         |
+| Authentication Type | Description |
 | ------------------- | --------------------------------------------------- |
-| `none`              | No authentication required. Default option.         |
-| `basic`             | Basic authentication using a username and password. |
-| `bearerToken`       | Token-based authentication.                         |
-| `oauth2`            | OAuth 2.0 support (not covered in this example).    |
+| `none` | No authentication required. Default option. |
+| `basic` | Basic authentication using a username and password. |
+| `bearerToken` | Token-based authentication. |
+| `oauth2` | OAuth 2.0 support (not covered in this example). |
 
 ### **1. Basic Authentication (Inline Configuration)**
 
@@ -113,23 +113,23 @@ destinations:
       passwordKey: agentToken
     secret:
       create: false
-      name: grafana-agent-secrets
-      namespace: monitoring
+      name: k8s-monitoring
+      namespace: observability
 ```
 
 ---
 
 ## **Advanced Configuration: Additional Fields for Destinations**
 
-To fine-tune your telemetry routing, Grafana Kubernetes Monitoring allows you to configure additional fields within the `destinations` block. These fields provide deeper customization, especially in multi-cluster or dynamically-configured environments.
+Beyond authentication, Grafana Kubernetes Monitoring provides advanced configuration options within the `destinations` block. These fields offer deeper customization, especially in multi-cluster or dynamically configured environments.
 
-| Field              | Description                                                             | Supported Destinations |
+| Field | Description | Supported Destinations |
 | ------------------ | ----------------------------------------------------------------------- | ---------------------- |
-| `extraHeaders`     | Add extra HTTP headers to telemetry data.                               | Prometheus, Loki, OTLP |
-| `extraHeadersFrom` | Dynamically reference HTTP headers from external sources or variables.  | Prometheus, Loki, OTLP |
-| `clusterLabels`    | Add labels indicating the cluster name—useful for multi-cluster setups. | Prometheus, Loki, OTLP |
-| `extraLabels`      | Add extra labels to metrics before sending (not available for OTLP).    | Prometheus, Loki       |
-| `extraLabelsFrom`  | Dynamically add extra labels (not available for OTLP).                  | Prometheus, Loki       |
+| `extraHeaders` | Add extra HTTP headers to telemetry data. | Prometheus, Loki, OTLP |
+| `extraHeadersFrom` | Dynamically reference HTTP headers from external sources or variables. | Prometheus, Loki, OTLP |
+| `clusterLabels` | Add labels indicating the cluster name—useful for multi-cluster setups. | Prometheus, Loki, OTLP |
+| `extraLabels` | Add extra labels to metrics before sending (not available for OTLP). | Prometheus, Loki |
+| `extraLabelsFrom` | Dynamically add extra labels (not available for OTLP). | Prometheus, Loki |
 
 ### **Example: Configuring a Prometheus Destination with Extra Fields**
 
@@ -157,13 +157,15 @@ This configuration dynamically injects values like `requestId`, `region`, and `p
 
 ---
 
-## **Summary**
+## **Conclusion**
 
-In this article, we’ve explored the various **destinations** in Grafana Kubernetes Monitoring and how to configure them for routing telemetry data effectively. From **Prometheus** for metrics to **Loki** for logs and **OTLP** for traces, understanding how to route telemetry data to the appropriate backends is essential for efficient observability within your cluster.
+Understanding how telemetry data is routed within Grafana Kubernetes Monitoring is essential for building a reliable and secure observability pipeline. In this article, we took a deep dive into how Destinations are configured and used to send metrics, logs, and traces to services like Prometheus, Loki, and OTLP-compatible backends.
 
-Additionally, we covered the different **authentication methods**, including basic authentication, bearer tokens, and Kubernetes Secrets, to securely manage access to your telemetry destinations. Lastly, we examined advanced configuration options, such as adding extra headers, labels, and cluster-specific information, to further customize your telemetry pipeline.
+We also looked at different authentication mechanisms—basic auth, bearer tokens, and Kubernetes Secrets—to ensure secure data transmission. Finally, we explored advanced configuration options like extra headers, cluster labels, and dynamic labels, which allow you to tailor your telemetry pipeline for multi-cluster and production-grade environments.
 
-By configuring your destinations and leveraging Grafana’s powerful monitoring tools, you can ensure that telemetry data is securely and efficiently routed, providing you with real-time insights into your Kubernetes environment.
+You can find the complete values.yaml configuration [here]().
+
+In the upcoming articles, we’ll begin exploring the individual Alloy modules—starting with alloy-logs, the component responsible for collecting logs from Kubernetes pods and nodes.
 
 ---
 
@@ -174,4 +176,3 @@ For more details on configuring specific destinations, refer to the following do
 * **[Loki Destination Documentation](https://github.com/grafana/k8s-monitoring-helm/blob/main/charts/k8s-monitoring/docs/destinations/loki.md)**
 * **[OTLP Destination Documentation](https://github.com/grafana/k8s-monitoring-helm/blob/main/charts/k8s-monitoring/docs/destinations/otlp.md)**
 * **[Prometheus Destination Documentation](https://github.com/grafana/k8s-monitoring-helm/blob/main/charts/k8s-monitoring/docs/destinations/prometheus.md)**
-

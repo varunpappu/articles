@@ -1,4 +1,4 @@
-# Inside Grafana Kubernetes Monitoring: Meet the Alloy Modules Powering Your Observability
+# Inside Grafana K8s Monitoring: Meet the Alloy Modules Powering Your Observability
 
 Kubernetes environments are complex, and monitoring them effectively requires powerful, flexible, and scalable observability solutions. Grafana’s Kubernetes Monitoring Helm Chart provides just that—an integrated solution for monitoring metrics, logs, traces, profiling, and event visibility, all designed to scale with your Kubernetes workloads.
 
