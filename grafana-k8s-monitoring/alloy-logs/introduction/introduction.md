@@ -8,6 +8,8 @@ Alloy-Logs is deployed as a **DaemonSet** (one Pod per node) that collects both 
 
 Logs require **node-local access**, which is why they're implemented as DaemonSets. This design ensures comprehensive log collection across your entire cluster while minimizing network overhead.
 
+![Grafana K8s Monitoring: Alloy-Logs](./alloy-logs.png)
+
 ## What Makes Alloy-Logs Unique?
 
 Alloy-Logs offers several key advantages over traditional logging solutions:
