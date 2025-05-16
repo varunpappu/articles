@@ -1,6 +1,6 @@
 # Grafana K8s Monitoring: A Deep Dive into Alloy-Logs
 
-In our previous articles, we explored various destinations for telemetry in Kubernetes monitoring with Grafana. Today, we'll focus on Alloy-Logs, a powerful component in the Grafana monitoring stack designed specifically for log collection in Kubernetes environments.
+In our previous [article](https://medium.com/codex/routing-telemetry-in-grafana-k8s-monitoring-a-deep-dive-into-destinations-3a6b7f116ae2), we explored various destinations for telemetry in Kubernetes monitoring with Grafana. Today, we'll focus on Alloy-Logs, a powerful component in the Grafana monitoring stack designed specifically for log collection in Kubernetes environments.
 
 ## What is Alloy-Logs?
 
@@ -88,7 +88,7 @@ controller:
 
 The controller is configured as a DaemonSet by default (one pod per node), ensuring comprehensive log collection throughout your cluster. 
 
-The `tolerations` setting is particularly important for beginners to understand: it allows Alloy-Logs pods to be scheduled on all nodes in your cluster, even those with taints. Taints are used in Kubernetes to repel certain pods from nodes (for example, nodes reserved for specific workloads). Without this toleration, your logging solution might miss data from these specialized nodes. For advanced users, you can modify these tolerations to be more selective if needed, but the `operator: Exists` configuration ensures maximum coverage.
+The `tolerations` setting is crucial as it allows Alloy-Logs pods to be scheduled on all nodes in your cluster, including those with taints. `Taints` are used in Kubernetes to keep away certain pods from nodes (for example, nodes with specific hardware or reserved for particular workloads). Without these tolerations, your logging solution might miss data from these nodes. While the default `operator: Exists` configuration ensures maximum coverage across all nodes, you can modify these tolerations to be more selective based on your specific requirements.
 
 #### 4. Alloy Core Configuration
 ```yaml
@@ -111,7 +111,7 @@ The storage configuration is essential to understand:
 - `storagePath: /var/lib/alloy` defines where Alloy-Logs stores its internal state data, including log positions
 - The `mounts` section maps the persistent volume to this path, ensuring that Alloy remembers which logs it has processed even if pods restart
 
-For beginners, think of this as Alloy's "bookmark" system — it keeps track of where it left off reading logs to avoid duplicate processing or missing data. For advanced users, customizing this storage location allows integration with different persistent storage solutions depending on your cluster's architecture.
+For example, think of this as Alloy's "bookmark" system — it keeps track of where it left off reading logs to avoid duplicate processing or missing data.
 
 Resource allocation is crucial for stable operation. According to the [official resource estimation guide](https://grafana.com/docs/alloy/latest/introduction/estimate-resource-usage/#loki-logs), Alloy-Logs requires sufficient memory and CPU to handle your expected log volume. The configuration above (2GB memory request, 4GB limit) is suitable for medium workloads, but you should adjust based on your specific environment:
 
@@ -140,7 +140,7 @@ These settings control how Alloy-Logs itself logs its operations, which is cruci
 ```yaml
 extraConfig: ""
 ```
-This parameter allows you to add custom Alloy configuration, extending functionality beyond default behaviors.
+This parameter allows you to add custom Alloy configuration, extending functionality beyond default behaviors. We will discuss more about this in our upcoming articles.
 
 ### Remote Configuration
 ```yaml
@@ -149,7 +149,7 @@ remoteConfig:
   url: ""
   pollFrequency: 5m
 ```
-Remote configuration enables centralized management of logging policies and behaviors. You can control and update these configurations directly from Grafana cloud Fleet management.
+Remote configuration enables centralized management of logging policies and behaviors. You can control and update these configurations directly from Grafana cloud Fleet management. 
 
 ### Config Reloader
 ```yaml
@@ -158,9 +158,6 @@ configReloader:
 ```
 
 **Tip**: By default, Alloy-Logs pods come with a Prometheus config reloader that checks for changes in ConfigMaps and Secrets. If you already use a cluster-wide reloader like [Stakater Reloader](https://github.com/stakater/Reloader), you can disable this component to save resources. This is particularly useful in large clusters where every resource optimization counts.
-
-
-Here’s your updated **Challenges and Limitations** section with the new point added as item 3, maintaining the tone and structure of the previous ones:
 
 ---
 
