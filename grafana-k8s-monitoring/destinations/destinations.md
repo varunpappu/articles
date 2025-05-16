@@ -38,11 +38,55 @@ destinations:
     url: https://otel-grafana-cloud-endpoint/otlp
 ```
 
-### **Understanding OTLP Service Configuration**
+## **Understanding OTLP Service Configuration**
 
-When configuring the OTLP destination, be mindful that if you connect to a Tempo endpoint, it will only process traces and will ignore logs and metrics. To ensure all telemetry data is processed correctly, use an **OTEL endpoint**. Requests sent to OTEL will automatically be forwarded to Tempo and then properly routed to Grafana Cloud for further handling.
+The **Alloy agents** handle the routing of telemetry data—metrics, logs, and traces—to destinations like Prometheus, Loki, and OTLP-compatible backends. These agents intelligently evaluate each destination’s capabilities and route telemetry accordingly, preserving native formats and minimizing unnecessary conversions.
 
----
+At a high level, the routing logic follows these rules:
+
+* **Partial OTLP Support**: When an OTLP destination supports only a subset of telemetry types (e.g., traces only), metrics and logs are routed to Prometheus and Loki, respectively. Any OTLP-formatted metrics or logs are translated into the appropriate format for these backends.
+
+* **Full OTLP Support**: When an OTLP destination supports all telemetry types (metrics, logs, and traces), OTLP-native telemetry is routed directly to the OTLP backend. Prometheus and Loki will only receive data in their native formats, while OTLP-native telemetry bypasses them entirely.
+
+### **Configuration Examples**
+
+#### Example 1: OTLP Destination Supports Only Traces
+
+```yaml
+destinations:
+  - type: prometheus
+  - type: loki
+  - type: otlp   # only supports traces
+```
+
+**In this configuration:**
+
+* **Metrics**: All metrics are sent to Prometheus. If they are originally OTLP-formatted, they are translated into Prometheus format.
+* **Logs**: All logs are sent to Loki, with OTLP logs translated as needed.
+* **Traces**: Traces are sent directly to the OTLP destination.
+
+This setup ensures compatibility by converting OTLP telemetry to match the supported formats of Prometheus and Loki when necessary.
+
+#### Example 2: OTLP Destination Supports Metrics, Logs, and Traces
+
+```yaml
+destinations:
+  - type: prometheus
+  - type: loki
+  - type: otlp   # supports metrics, logs, and traces
+```
+
+**In this configuration:**
+
+* **Metrics**: Prometheus-native metrics go to Prometheus. OTLP-formatted metrics are routed directly to the OTLP destination without translation.
+* **Logs**: Loki-native logs go to Loki. OTLP-formatted logs are routed directly to the OTLP destination, bypassing Loki.
+* **Traces**: All traces are sent directly to the OTLP destination.
+
+This setup ensures OTLP-native telemetry stays within the OTLP ecosystem, maintaining data fidelity and avoiding unnecessary format conversions.
+
+
+> **Note:**
+> Currently, only **OTLP over HTTP** is supported—**gRPC is not supported** at this time.
 
 ## **Authentication for Telemetry Destinations**
 
