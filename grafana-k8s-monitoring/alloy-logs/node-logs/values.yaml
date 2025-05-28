@@ -1,0 +1,52 @@
+cluster:
+  name: minikube-localhost
+
+destinations:
+  - name: logsService
+    type: loki
+    url: http://loki-grafana-cloud-endpoint/loki/api/v1/push
+    auth:
+      type: basic
+      usernameKey: lokiUsername
+      passwordKey: agentToken
+    secret:
+      create: false
+      name: k8s-monitoring
+      namespace: observability
+
+alloy-logs:
+  enabled: true
+
+nodeLogs:
+  enabled: true
+  journal:
+    path: "/var/log/journal"
+    maxAge: "24h"
+    units:
+      - kubelet.service
+      - containerd.service
+      - node-problem-detector.service
+  extraDiscoveryRules: |
+    - action: keep
+      regex: kubelet.service|containerd.service|node-problem-detector.service
+      source_labels: [__journal__systemd_unit]
+  extraLogProcessingStages: |
+    - json:
+        expressions:
+          message: MESSAGE
+          priority: PRIORITY
+    - template:
+        source: priority
+        template: |
+          {{ if eq .Value "3" }}error
+          {{ else if eq .Value "4" }}warning
+          {{ else if eq .Value "6" }}info
+          {{ else }}debug{{ end }}
+        target: level
+  labelsToKeep:
+    - instance
+    - job
+    - unit
+    - level
+  structuredMetadata:
+    severity: level
