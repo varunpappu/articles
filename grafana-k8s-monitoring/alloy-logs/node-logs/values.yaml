@@ -39,7 +39,7 @@ nodeLogs:
         source: priority
         template: |
           {{ if eq .Value "3" }}error
-          {{ else if eq .Value "4" }}warning  
+          {{ else if eq .Value "4" }}warning
           {{ else if eq .Value "6" }}info
           {{ else }}debug{{ end }}
         target: level
