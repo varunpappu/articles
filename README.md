@@ -8,6 +8,9 @@ This repository contains a series of articles and configuration examples.
     - [introduction/](./grafana-k8s-monitoring/alloy-logs/introduction/)
       - [introduction.md](./grafana-k8s-monitoring/alloy-logs/introduction/introduction.md): Deep dive into Alloy-Logs, its configuration, and best practices.
       - [values.yaml](./grafana-k8s-monitoring/alloy-logs/introduction/values.yaml): Example configuration for Alloy-Logs.
+    - [nodeLogs/](./grafana-k8s-monitoring/alloy-logs/node-logs/)
+      - [introduction.md](./grafana-k8s-monitoring/alloy-logs/node-logs/node-logs.md): Deep dive into Node-Logs, its configuration, and best practices.
+      - [values.yaml](./grafana-k8s-monitoring/alloy-logs/node-logs/values.yaml): Example configuration for nodeLogs.
   - [destinations/](./grafana-k8s-monitoring/destinations/)
     - [destinations.md](./grafana-k8s-monitoring/destinations/destinations.md): How telemetry is routed to destinations like Prometheus, Loki, and OTLP.
     - [values.yaml](./grafana-k8s-monitoring/destinations/values.yaml): Example configuration for destinations.
