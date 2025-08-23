@@ -224,7 +224,6 @@ You can find the complete `values.yaml` configuration [here](https://github.com/
 ## References
 
 * [nodeLogs `values.yaml`](https://github.com/grafana/k8s-monitoring-helm/blob/main/charts/k8s-monitoring/charts/feature-node-logs/values.yaml)
-* [Alloy Logs Documentation](https://grafana.com/docs/k8s-monitoring/latest/features/logs/alloy-logs/)
 * [systemd.journal-fields(7)](https://www.freedesktop.org/software/systemd/man/latest/systemd.journal-fields.html)
 * [RFC 3164 - Syslog Priority Values](https://tools.ietf.org/html/rfc3164#section-4.1.1)
 * [journalctl - Output Formats](https://www.freedesktop.org/software/systemd/man/latest/journalctl.html#-o)
