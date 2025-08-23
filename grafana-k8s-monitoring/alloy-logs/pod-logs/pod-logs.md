@@ -87,6 +87,8 @@ It’s the difference between searching blindly in a haystack and being handed a
 
 With Grafana’s Kubernetes Monitoring Helm chart, enabling pod-level log collection requires only a minimal configuration addition to your `values.yaml`:
 
+**Example:**
+
 ```yaml
 podLogs:
   enabled: true
@@ -179,6 +181,23 @@ podLogs:
       source_labels: [__meta_kubernetes_pod_name]
 ```
 
+*In the above example, logs are scraped only from pods that have the annotation `logs_enabled: true`.*
+
+**Example:**
+
+```yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: my-app
+  annotations:
+    logs_enabled: "true"
+spec:
+  containers:
+    - name: app
+      image: my-app:latest
+```
+
 ***
 
 ### Post-Scrape Processing
@@ -240,62 +259,11 @@ podLogs:
 
 ## Complete Configuration Example
 
-```yaml
-podLogs:
-  enabled: true
-  gatherMethod: volumes
-
-  namespaces:
-    include:
-      - production
-      - staging
-    exclude:
-      - kube-system
-      - kube-public
-
-  extraDiscoveryRules: |
-    - action: keep
-      regex: "true"
-      source_labels: [__meta_kubernetes_pod_annotation_logs_enabled]
-    - action: drop
-      regex: "test.*"
-      source_labels: [__meta_kubernetes_pod_name]
-
-  extraLogProcessingStages: |
-    - json:
-        expressions:
-          level: level
-          message: msg
-          timestamp: ts
-    - labels:
-        level:
-    - match:
-        selector: '{level="debug"}'
-        stages:
-          - sampling:
-              rate: 0.1
-
-  secretFilter:
-    enabled: true
-    includeGeneric: true
-    partialMask: 4
-    replacement: "[REDACTED]"
-
-  labelsToKeep:
-    - app.kubernetes.io/name
-    - app.kubernetes.io/instance
-    - deployment.environment
-    - level
-
-  structuredMetadata:
-    k8s.pod.name: k8s.pod.name
-    k8s.pod.uid: k8s.pod.uid
-    k8s.pod.ip: k8s.pod.ip
-```
+You can find the complete `values.yaml` configuration [here](https://github.com/varunpappu/articles/blob/main/grafana-k8s-monitoring/alloy-logs/pod-logs/values.yaml).
 
 ***
 
-## Advanced Use Case: Custom Log Paths with Extra Configuration
+## Advanced Use Case: Custom Log Paths
 
 Beyond standard pod logs, many enterprise environments require collecting application-specific logs from custom paths such as audit logs stored on persistent volumes, logs from sidecar containers, or legacy applications.
 
@@ -410,17 +378,31 @@ alloy-logs:
       ]
     }
 ```
+### Step-wise Summary
+
+- **Mount host paths** → Grants Alloy access to pod log directories (`/var/lib/kubelet/pods`) via `/hostfs`.  
+- **Discover Vault pods** → Finds all pods in the `vault-enterprise` namespace.  
+- **Enrich metadata** → Adds pod labels and annotations as log labels; sets a consistent job label.  
+- **Build file paths** → Constructs CSI-mounted Vault audit log file paths using Pod UIDs.  
+- **Match log files** → Expands glob patterns and finds the actual log files on disk.  
+- **Collect logs** → Reads audit logs from the discovered files.  
+- **Process logs** → Adds structured metadata (pod name, UID) and keeps only curated labels for performance.  
+- **Forward logs** → Sends processed logs to Grafana Cloud Loki for centralized storage and analysis.  
+
 
 ***
 
 ## Wrapping Up
 
-Pod-level logs are a vital component for deep Kubernetes observability. Grafana’s podLogs, powered by alloy-logs, makes collecting, enriching, and routing logs easier, scalable, and rich in context.
+Pod-level logs are more than debugging artifacts—they’re the **narrative of your workloads**, written in real time. But without enrichment and scalability, this narrative is fragmented and hard to follow.  
 
-With minimal configuration, teams gain powerful log visibility essential for debugging, troubleshooting, compliance, and incident response—turning a sea of raw logs into an actionable, structured source of truth.
+Grafana’s `podLogs`, powered by `alloy-logs`, transforms raw logs into a **cluster-wide, structured source of truth**. With minimal configuration, you gain:  
 
+- Unified visibility across every namespace and node  
+- Fast, correlated troubleshooting with metrics and events  
+- Structured, compliant logs for auditing and retention  
 
-You can find the complete `values.yaml` configuration [here](https://github.com/varunpappu/articles/blob/main/grafana-k8s-monitoring/alloy-logs/pod-logs/values.yaml).
+In short: you move from drowning in logs to **understanding your cluster’s story with clarity and confidence.**  
 
 ## References
 
